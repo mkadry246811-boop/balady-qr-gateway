@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>جارٍ فتح الشهادة…</title>
+<style>body{font-family:system-ui,Tahoma,sans-serif;background:#f7f8fa;color:#263238;min-height:100vh;display:grid;place-items:center;margin:0}.box{text-align:center;padding:2rem}.spinner{width:36px;height:36px;border:4px solid #dce3e8;border-top-color:#177b70;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}@keyframes spin{to{transform:rotate(360deg)}}</style>
+</head>
+<body>
+<main class="box"><div class="spinner" id="spinner"></div><p id="msg" role="status">جارٍ فتح الشهادة…</p></main>
+<script>
+(function () {
+'use strict';
+var FRONTEND_BASE = 'https://balady-site.vercel.app';
+var msg = document.getElementById('msg');
+var spinner = document.getElementById('spinner');
+function fail(message){msg.textContent=message;spinner.style.display='none';}
+try {
+var current=new URL(window.location.href);
+var params=new URLSearchParams(current.search);
+var id=params.get('id');
+if(!id){
+var segments=current.pathname.split('/').filter(Boolean).map(function(s){return decodeURIComponent(s);});
+var last=segments[segments.length-1]||'';
+if(last&&!/^(balady-qr-gateway|view|index\.html|404\.html)$/i.test(last)) id=last;
+}
+if(!id||!id.trim()||id.length>256||/[\x00-\x1f\x7f]/.test(id)){fail('رابط غير صالح: لا يوجد معرّف شهادة صحيح.');return;}
+params.delete('id');
+var target=new URL(FRONTEND_BASE.replace(/\/+$/,'')+'/view/'+encodeURIComponent(id.trim()));
+params.forEach(function(value,key){target.searchParams.append(key,value);});
+window.location.replace(target.href);
+}catch(e){fail('تعذّر فتح رابط الشهادة. يرجى التحقق من الرابط.');}
+})();
+</script></body></html>
